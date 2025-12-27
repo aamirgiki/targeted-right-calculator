@@ -38,6 +38,42 @@
             border-top: 6px solid #1a2f38;
         }
         
+        /* --- PDF SPECIFIC STYLING --- */
+        .container.pdf-mode {
+            box-shadow: none !important;
+            border: 2px solid #24404D; /* Professional border */
+            max-width: 800px;
+            border-radius: 0;
+            background: white;
+        }
+
+        .container.pdf-mode input {
+            background: transparent !important;
+            border: none !important;
+            border-bottom: 1px solid #ccc !important;
+            padding: 5px 0 !important;
+            font-size: 1.2rem;
+            color: #000;
+        }
+
+        .container.pdf-mode .unit {
+            top: 5px !important;
+            color: #000 !important;
+        }
+
+        .container.pdf-mode .calculate-btn, 
+        .container.pdf-mode .action-buttons,
+        .container.pdf-mode summary {
+            display: none !important; /* Hide buttons in PDF */
+        }
+        
+        .container.pdf-mode details {
+            display: block !important;
+            border: 1px solid #eee;
+            margin-top: 20px;
+        }
+        /* --------------------------- */
+
         .header {
             background: var(--brand-white);
             padding: 30px 35px 10px 35px;
@@ -245,9 +281,6 @@
             color: #94a3b8;
             font-size: 0.75rem;
         }
-        
-        /* Hide buttons during PDF generation */
-        .pdf-hide { display: block; }
     </style>
 </head>
 <body>
@@ -258,6 +291,7 @@
         </div>
         
         <div class="calculator-body">
+            
             <div class="input-group">
                 <label>Existing Structure</label>
                 <div class="input-wrapper">
@@ -275,9 +309,7 @@
                 <div class="error-message" id="error-msg">Please enter valid positive numbers.</div>
             </div>
             
-            <div class="pdf-hide" id="controls-area">
-                <button class="calculate-btn" onclick="calculateDiscount()">CALCULATE DISCOUNT</button>
-            </div>
+            <button class="calculate-btn" onclick="calculateDiscount()">CALCULATE DISCOUNT</button>
             
             <div class="results" id="results">
                 <div class="result-card">
@@ -302,7 +334,7 @@
                     </div>
                 </div>
 
-                <details class="pdf-hide">
+                <details>
                     <summary>View Technical Parameters</summary>
                     <div class="breakdown-item">
                         <span>Volume Gate (< 2000)</span>
@@ -314,7 +346,7 @@
                     </div>
                 </details>
 
-                <div class="action-buttons pdf-hide">
+                <div class="action-buttons">
                     <button class="download-btn" onclick="downloadPDF()">
                         ⬇ Download Result as PDF
                     </button>
@@ -323,12 +355,12 @@
         </div>
         
         <div class="footer">
-            Internal Tool v2.2 | © 2025 Draftsman Elite
+            Internal Tool v2.3 | © 2025 Draftsman Elite
         </div>
     </div>
     
     <script>
-        // CONFIGURATION VARIABLES (Traceability)
+        // CONFIGURATION
         const CONFIG = {
             BASE_DISCOUNT: 5,
             BASE_SCALAR: 10,
@@ -347,7 +379,6 @@
             const E = parseFloat(existingInput.value);
             const N = parseFloat(newInput.value);
             
-            // VALIDATION: Check for negatives or missing new structure
             if (isNaN(E) || isNaN(N) || E < 0 || N <= 0) {
                 errorMsg.style.display = 'block';
                 document.getElementById('results').classList.remove('show');
@@ -358,27 +389,20 @@
             
             const T = E + N;
             const r = E / T;
-            
-            // FORMULA: 5 + 10 * r^3
             const d_raw = Math.pow(r, CONFIG.EXPONENT);
             const d_scaled = CONFIG.BASE_DISCOUNT + CONFIG.BASE_SCALAR * d_raw;
-            
             const d_max = T < CONFIG.VOLUME_GATE_LIMIT ? CONFIG.CAP_LOW : CONFIG.CAP_HIGH;
             const volumeGateActive = T < CONFIG.VOLUME_GATE_LIMIT;
-            
             let d_final = Math.min(Math.max(d_scaled, CONFIG.BASE_DISCOUNT), d_max);
             
-            // JMD Calculation
             const totalValue = T * CONFIG.JMD_RATE;
             const savingsAmount = totalValue * (d_final / 100);
 
-            // Display Results
             document.getElementById('discount-value').textContent = d_final.toFixed(2);
             document.getElementById('jmd-savings').textContent = '$' + savingsAmount.toLocaleString('en-JM', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('total-structure').textContent = T.toLocaleString() + ' sq ft';
             document.getElementById('efficiency-ratio').textContent = r.toFixed(3);
             
-            // Update Explanation Text
             const efficiencyPart = (d_final - CONFIG.BASE_DISCOUNT).toFixed(2);
             document.getElementById('explanation').textContent = `Includes ${CONFIG.BASE_DISCOUNT}% Base + ${efficiencyPart}% Efficiency Bonus`;
 
@@ -390,26 +414,23 @@
 
         function downloadPDF() {
             const element = document.getElementById('calculator-card');
-            // Hide buttons before printing to make it look clean
-            const buttons = document.querySelectorAll('.pdf-hide');
-            buttons.forEach(btn => btn.style.display = 'none');
-
+            
+            // 1. Switch to PDF Style Mode
+            element.classList.add('pdf-mode');
+            
+            // 2. Configure the PDF settings
             const opt = {
                 margin:       10,
                 filename:     'Draftsman_Discount_Result.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
+                image:        { type: 'jpeg', quality: 1 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Generate PDF and then restore buttons
+            // 3. Generate and Save
             html2pdf().from(element).set(opt).save().then(() => {
-                buttons.forEach(btn => btn.style.display = 'block');
-                // Keep details closed for UI but re-enable display property
-                document.querySelector('details').style.display = 'block'; 
-                document.getElementById('controls-area').style.display = 'block';
-                document.querySelector('.action-buttons').style.display = 'block'; 
-                document.querySelector('.action-buttons').style.textAlign = 'center'; // Restore alignment
+                // 4. Revert back to Web Style Mode
+                element.classList.remove('pdf-mode');
             });
         }
     </script>
