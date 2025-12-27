@@ -11,6 +11,7 @@
             --brand-primary: #24404D;
             --brand-dark: #0F0F0F;
             --brand-white: #FFFFFF;
+            --brand-accent: #e0f2fe;
             --error-red: #e53e3e;
         }
 
@@ -28,6 +29,7 @@
             color: var(--brand-dark);
         }
         
+        /* --- CALCULATOR UI STYLES --- */
         .container {
             background: var(--brand-white);
             border-radius: 8px;
@@ -38,42 +40,6 @@
             border-top: 6px solid #1a2f38;
         }
         
-        /* --- PDF SPECIFIC STYLING --- */
-        .container.pdf-mode {
-            box-shadow: none !important;
-            border: 2px solid #24404D; /* Professional border */
-            max-width: 800px;
-            border-radius: 0;
-            background: white;
-        }
-
-        .container.pdf-mode input {
-            background: transparent !important;
-            border: none !important;
-            border-bottom: 1px solid #ccc !important;
-            padding: 5px 0 !important;
-            font-size: 1.2rem;
-            color: #000;
-        }
-
-        .container.pdf-mode .unit {
-            top: 5px !important;
-            color: #000 !important;
-        }
-
-        .container.pdf-mode .calculate-btn, 
-        .container.pdf-mode .action-buttons,
-        .container.pdf-mode summary {
-            display: none !important; /* Hide buttons in PDF */
-        }
-        
-        .container.pdf-mode details {
-            display: block !important;
-            border: 1px solid #eee;
-            margin-top: 20px;
-        }
-        /* --------------------------- */
-
         .header {
             background: var(--brand-white);
             padding: 30px 35px 10px 35px;
@@ -229,7 +195,6 @@
             font-size: 0.95rem;
         }
         
-        /* Collapsible Section Styles */
         details {
             margin-top: 15px;
             background: #f8fafc;
@@ -281,6 +246,106 @@
             color: #94a3b8;
             font-size: 0.75rem;
         }
+
+        /* --- HIDDEN PDF REPORT TEMPLATE --- */
+        #pdf-template {
+            display: none; /* Hidden from screen */
+            width: 800px;
+            background: white;
+            padding: 40px;
+            font-family: 'Montserrat', sans-serif;
+            color: #000;
+        }
+
+        .pdf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--brand-primary);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .pdf-logo {
+            max-width: 150px;
+        }
+
+        .pdf-meta {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .pdf-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--brand-primary);
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .pdf-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .pdf-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .pdf-section h3 {
+            color: var(--brand-primary);
+            font-size: 1rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid #cbd5e0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .pdf-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .pdf-result-box {
+            background: var(--brand-primary);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .pdf-big-text {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .pdf-savings {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        .pdf-footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -347,15 +412,83 @@
                 </details>
 
                 <div class="action-buttons">
-                    <button class="download-btn" onclick="downloadPDF()">
-                        ⬇ Download Result as PDF
+                    <button class="download-btn" onclick="generateReport()">
+                        📄 Generate Official Report
                     </button>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            Internal Tool v2.3 | © 2025 Draftsman Elite
+            Internal Tool v2.4 | © 2025 Draftsman Elite
+        </div>
+    </div>
+
+    <div id="pdf-template">
+        <div class="pdf-header">
+            <img src="logo.png" alt="Draftsman Elite" class="pdf-logo">
+            <div class="pdf-meta">
+                <p><strong>Date:</strong> <span id="pdf-date"></span></p>
+                <p><strong>Ref ID:</strong> <span id="pdf-ref"></span></p>
+            </div>
+        </div>
+
+        <h2 class="pdf-title">Discount Assessment Report</h2>
+
+        <div class="pdf-grid">
+            <div class="pdf-section">
+                <h3>Project Parameters</h3>
+                <div class="pdf-row">
+                    <span>Existing Structure:</span>
+                    <strong id="pdf-existing-val">0 sq ft</strong>
+                </div>
+                <div class="pdf-row">
+                    <span>New Structure:</span>
+                    <strong id="pdf-new-val">0 sq ft</strong>
+                </div>
+                <div class="pdf-row">
+                    <span>Total Area:</span>
+                    <strong id="pdf-total-val">0 sq ft</strong>
+                </div>
+                <div class="pdf-row" style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top:10px;">
+                    <span>Efficiency Ratio:</span>
+                    <strong id="pdf-ratio-val">0.00</strong>
+                </div>
+            </div>
+
+            <div class="pdf-result-box">
+                <p style="text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; opacity: 0.8;">Recommended Discount</p>
+                <div class="pdf-big-text" id="pdf-discount-val">0.00%</div>
+                <div class="pdf-savings">
+                    Estimated Savings:<br>
+                    <strong id="pdf-savings-val">$0.00 JMD</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="pdf-section">
+            <h3>Technical Breakdown</h3>
+            <div class="pdf-row">
+                <span>Calculation Basis:</span>
+                <span>Standard Dynamic Formula</span>
+            </div>
+            <div class="pdf-row">
+                <span>Base Discount:</span>
+                <span>5.00%</span>
+            </div>
+            <div class="pdf-row">
+                <span>Volume Gate Status:</span>
+                <span id="pdf-gate-val">Inactive</span>
+            </div>
+            <div class="pdf-row">
+                <span>Applicable Cap:</span>
+                <span id="pdf-cap-val">15%</span>
+            </div>
+        </div>
+
+        <div class="pdf-footer">
+            <p>This document is computer generated by the Draftsman Elite Internal Tool.</p>
+            <p>Valid for 30 days from date of issue. © 2025 Draftsman Elite.</p>
         </div>
     </div>
     
@@ -398,6 +531,7 @@
             const totalValue = T * CONFIG.JMD_RATE;
             const savingsAmount = totalValue * (d_final / 100);
 
+            // Update UI
             document.getElementById('discount-value').textContent = d_final.toFixed(2);
             document.getElementById('jmd-savings').textContent = '$' + savingsAmount.toLocaleString('en-JM', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('total-structure').textContent = T.toLocaleString() + ' sq ft';
@@ -405,32 +539,44 @@
             
             const efficiencyPart = (d_final - CONFIG.BASE_DISCOUNT).toFixed(2);
             document.getElementById('explanation').textContent = `Includes ${CONFIG.BASE_DISCOUNT}% Base + ${efficiencyPart}% Efficiency Bonus`;
-
             document.getElementById('volume-gate').textContent = volumeGateActive ? 'Active' : 'Inactive';
             document.getElementById('max-allowed').textContent = d_max + '%';
             
             document.getElementById('results').classList.add('show');
         }
 
-        function downloadPDF() {
-            const element = document.getElementById('calculator-card');
+        function generateReport() {
+            // 1. Populate PDF Data
+            const today = new Date();
+            document.getElementById('pdf-date').textContent = today.toLocaleDateString();
+            document.getElementById('pdf-ref').textContent = 'DE-' + Math.floor(1000 + Math.random() * 9000); // Random Ref ID
+
+            document.getElementById('pdf-existing-val').textContent = document.getElementById('existing').value + ' sq ft';
+            document.getElementById('pdf-new-val').textContent = document.getElementById('new').value + ' sq ft';
+            document.getElementById('pdf-total-val').textContent = document.getElementById('total-structure').textContent;
+            document.getElementById('pdf-ratio-val').textContent = document.getElementById('efficiency-ratio').textContent;
             
-            // 1. Switch to PDF Style Mode
-            element.classList.add('pdf-mode');
+            document.getElementById('pdf-discount-val').textContent = document.getElementById('discount-value').textContent + '%';
+            document.getElementById('pdf-savings-val').textContent = document.getElementById('jmd-savings').textContent + ' JMD';
             
-            // 2. Configure the PDF settings
+            document.getElementById('pdf-gate-val').textContent = document.getElementById('volume-gate').textContent;
+            document.getElementById('pdf-cap-val').textContent = document.getElementById('max-allowed').textContent;
+
+            // 2. Show Template temporarily
+            const element = document.getElementById('pdf-template');
+            element.style.display = 'block';
+
+            // 3. Generate PDF
             const opt = {
                 margin:       10,
-                filename:     'Draftsman_Discount_Result.pdf',
+                filename:     'Draftsman_Discount_Report.pdf',
                 image:        { type: 'jpeg', quality: 1 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // 3. Generate and Save
             html2pdf().from(element).set(opt).save().then(() => {
-                // 4. Revert back to Web Style Mode
-                element.classList.remove('pdf-mode');
+                element.style.display = 'none'; // Hide again after download
             });
         }
     </script>
