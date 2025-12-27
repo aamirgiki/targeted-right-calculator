@@ -249,13 +249,17 @@
 
         /* --- HIDDEN PDF REPORT TEMPLATE --- */
         #pdf-template {
-            display: none; /* Hidden from screen */
-            width: 700px; /* Reduced width to fit A4 margins safely */
+            display: none;
+            width: 700px;
             background: white;
             padding: 40px;
             font-family: 'Montserrat', sans-serif;
             color: #000;
             margin: 0 auto;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .pdf-header {
