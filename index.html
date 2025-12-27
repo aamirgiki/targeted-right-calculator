@@ -588,44 +588,35 @@
             document.getElementById('pdf-gate-val').textContent = document.getElementById('volume-gate').textContent;
             document.getElementById('pdf-cap-val').textContent = document.getElementById('max-allowed').textContent;
 
-            // 2. Show Template and temporarily adjust body for proper capture
+            // 2. Clone the template and place in a fresh container
             const element = document.getElementById('pdf-template');
-            const body = document.body;
-            const calculator = document.getElementById('calculator-card');
-            
-            // Store original styles
-            const originalBodyStyle = body.style.cssText;
-            
-            // Hide calculator and reset body layout
-            calculator.style.display = 'none';
-            body.style.display = 'block';
-            body.style.padding = '0';
-            body.style.margin = '0';
-            body.style.background = 'white';
-            
-            // Position pdf-template at top
             element.style.display = 'block';
-            element.style.position = 'absolute';
-            element.style.top = '0';
-            element.style.left = '0';
+            
+            // Create a temporary container outside the flex body
+            const tempContainer = document.createElement('div');
+            tempContainer.style.cssText = 'position:fixed; top:0; left:0; width:700px; background:white; z-index:9999;';
+            
+            // Clone the content
+            const clone = element.cloneNode(true);
+            clone.style.display = 'block';
+            clone.style.margin = '0';
+            clone.style.padding = '40px';
+            tempContainer.appendChild(clone);
+            document.body.appendChild(tempContainer);
 
-            // 3. Generate PDF with SAFE MARGINS
+            // 3. Generate PDF
             const opt = {
-                margin:       [5, 10, 10, 10], // top, right, bottom, left in mm
-                filename:     'Draftsman_Discount_Report.pdf',
-                image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, windowHeight: element.scrollHeight },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin: [5, 10, 10, 10],
+                filename: 'Draftsman_Discount_Report.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().from(element).set(opt).save().then(() => {
-                // Restore original styles
+            html2pdf().from(clone).set(opt).save().then(() => {
+                // Cleanup
+                document.body.removeChild(tempContainer);
                 element.style.display = 'none';
-                element.style.position = '';
-                element.style.top = '';
-                element.style.left = '';
-                calculator.style.display = '';
-                body.style.cssText = originalBodyStyle;
             });
         }
     </script>
