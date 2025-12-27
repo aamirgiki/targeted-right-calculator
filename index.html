@@ -27,6 +27,7 @@
             align-items: center;
             padding: 20px;
             color: var(--brand-dark);
+            position: relative; /* Needed for absolute positioning of PDF */
         }
         
         /* --- CALCULATOR UI STYLES --- */
@@ -38,6 +39,8 @@
             width: 100%;
             overflow: hidden;
             border-top: 6px solid #1a2f38;
+            position: relative;
+            z-index: 10; /* Keep calculator above background */
         }
         
         .header {
@@ -248,14 +251,24 @@
         }
 
         /* --- HIDDEN PDF REPORT TEMPLATE --- */
+        /* FIXED: Using absolute positioning to prevent centering issues */
         #pdf-template {
-            display: none; /* Hidden from screen */
-            width: 700px; /* Reduced width to fit A4 margins safely */
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1; /* Keep it behind everything until generated */
+            visibility: hidden; /* Hide it visually */
+            width: 750px; /* Perfect width for A4 */
             background: white;
             padding: 40px;
             font-family: 'Montserrat', sans-serif;
             color: #000;
-            margin: 0 auto;
+        }
+        
+        /* When generating, we make it visible but keep absolute position at top */
+        #pdf-template.generating {
+            visibility: visible;
+            z-index: 9999;
         }
 
         .pdf-header {
@@ -575,7 +588,7 @@
             // 1. Populate PDF Data
             const today = new Date();
             document.getElementById('pdf-date').textContent = today.toLocaleDateString();
-            document.getElementById('pdf-ref').textContent = 'DE-' + Math.floor(1000 + Math.random() * 9000); // Random Ref ID
+            document.getElementById('pdf-ref').textContent = 'DE-' + Math.floor(1000 + Math.random() * 9000); 
 
             document.getElementById('pdf-existing-val').textContent = document.getElementById('existing').value + ' sq ft';
             document.getElementById('pdf-new-val').textContent = document.getElementById('new').value + ' sq ft';
@@ -588,21 +601,21 @@
             document.getElementById('pdf-gate-val').textContent = document.getElementById('volume-gate').textContent;
             document.getElementById('pdf-cap-val').textContent = document.getElementById('max-allowed').textContent;
 
-            // 2. Show Template temporarily
+            // 2. Show Template via Class toggle (forces Top Left Position)
             const element = document.getElementById('pdf-template');
-            element.style.display = 'block';
+            element.classList.add('generating');
 
-            // 3. Generate PDF with SAFE MARGINS
+            // 3. Generate PDF
             const opt = {
-                margin:       10, // Safe margin in mm
+                margin:       15, // Nice margins
                 filename:     'Draftsman_Discount_Report.pdf',
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().from(element).set(opt).save().then(() => {
-                element.style.display = 'none'; // Hide again after download
+                element.classList.remove('generating'); // Hide again
             });
         }
     </script>
