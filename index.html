@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discount Calculator | Draftsman Elite</title>
+    <title>Dynamic Discount Calculator | Draftsman Elite</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --brand-primary: #24404D; /* Draftsman Elite Blue/Teal */
-            --brand-dark: #0F0F0F;    /* Draftsman Elite Black */
+            --brand-primary: #24404D;
+            --brand-dark: #0F0F0F;
             --brand-white: #FFFFFF;
-            --accent-color: #2c5282;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Montserrat', sans-serif; /* Brand Font */
+            font-family: 'Montserrat', sans-serif;
             background-color: var(--brand-primary);
             background-image: linear-gradient(135deg, #24404D 0%, #1a2f38 100%);
             min-height: 100vh;
@@ -33,7 +28,7 @@
         
         .container {
             background: var(--brand-white);
-            border-radius: 8px; /* Sharper corners for architectural look */
+            border-radius: 8px;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
             max-width: 600px;
             width: 100%;
@@ -43,34 +38,31 @@
         
         .header {
             background: var(--brand-white);
-            padding: 35px 35px 20px 35px;
+            padding: 30px 35px 10px 35px;
             text-align: center;
             border-bottom: 1px solid #edf2f7;
         }
+
+        .logo-img {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
         
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             color: var(--brand-primary);
             text-transform: uppercase;
-            margin-bottom: 5px;
         }
         
-        .header p {
-            color: #718096;
-            font-size: 0.9rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
+        .calculator-body { padding: 35px; }
         
-        .calculator-body {
-            padding: 35px;
-        }
-        
-        .input-group {
-            margin-bottom: 25px;
-        }
+        .input-group { margin-bottom: 25px; }
         
         .input-group label {
             display: block;
@@ -79,19 +71,6 @@
             margin-bottom: 8px;
             font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .input-group .description {
-            font-size: 0.85rem;
-            color: #718096;
-            margin-bottom: 10px;
-        }
-        
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
         }
         
         .input-wrapper input {
@@ -102,27 +81,22 @@
             border-radius: 6px;
             font-size: 1.1rem;
             font-family: 'Montserrat', sans-serif;
-            transition: all 0.3s ease;
             background: #f8fafc;
             color: var(--brand-primary);
             font-weight: 600;
         }
-        
-        .input-wrapper input:focus {
-            outline: none;
-            border-color: var(--brand-primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(36, 64, 77, 0.1);
-        }
-        
+
         .input-wrapper .unit {
             position: absolute;
             right: 15px;
+            top: 18px;
             color: #718096;
             font-size: 0.9rem;
             font-weight: 600;
         }
         
+        .input-wrapper { position: relative; }
+
         .calculate-btn {
             width: 100%;
             padding: 18px;
@@ -132,18 +106,16 @@
             border-radius: 6px;
             font-size: 1.1rem;
             font-weight: 700;
-            letter-spacing: 1px;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 15px;
+            margin-top: 10px;
             font-family: 'Montserrat', sans-serif;
         }
         
         .calculate-btn:hover {
-            background: #1a2f38; /* Darker shade of brand color */
+            background: #1a2f38;
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(36, 64, 77, 0.2);
         }
         
         .results {
@@ -153,10 +125,7 @@
             padding-top: 30px;
         }
         
-        .results.show {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
+        .results.show { display: block; animation: fadeIn 0.5s ease; }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -166,9 +135,10 @@
         .result-card {
             background: #f1f5f9;
             border-radius: 8px;
-            padding: 30px;
+            padding: 25px;
             text-align: center;
             border: 1px solid #cbd5e0;
+            margin-bottom: 20px;
         }
         
         .result-card .label {
@@ -181,104 +151,89 @@
         }
         
         .result-card .discount-value {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 700;
             color: var(--brand-primary);
             line-height: 1;
         }
         
-        .result-card .discount-suffix {
-            font-size: 1.8rem;
-            color: var(--brand-primary);
-            font-weight: 600;
+        .savings-box {
+            margin-top: 15px;
+            background: #e0f2fe;
+            color: #0c4a6e;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: 1px solid #bae6fd;
         }
-        
-        .breakdown {
-            margin-top: 25px;
-        }
-        
+
         .breakdown-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #e2e8f0;
             font-size: 0.95rem;
         }
         
-        .breakdown-item:last-child {
-            border-bottom: none;
-        }
-        
-        .breakdown-item .item-label {
-            color: #64748b;
-        }
-        
-        .breakdown-item .item-value {
-            font-weight: 700;
-            color: var(--brand-primary);
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        /* Collapsible Section Styles */
+        details {
             margin-top: 15px;
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        summary {
+            cursor: pointer;
+            color: #64748b;
+            font-weight: 600;
+            padding: 5px;
+            list-style: none; /* Hide default triangle in some browsers */
         }
         
-        .status-badge.low { background: #e2e8f0; color: #475569; }
-        .status-badge.medium { background: #cbd5e1; color: #334155; }
-        .status-badge.high { background: #24404D; color: #ffffff; }
-        .status-badge.capped { background: #0F0F0F; color: #ffffff; }
+        summary:hover { color: var(--brand-primary); }
+
+        summary::after {
+            content: "+"; 
+            float: right;
+            font-weight: bold;
+        }
         
+        details[open] summary::after { content: "-"; }
+
         .footer {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             background: #f8fafc;
             color: #94a3b8;
             font-size: 0.75rem;
-            border-top: 1px solid #e2e8f0;
         }
-        
-        .error-msg {
-            color: #ef4444;
-            font-size: 0.85rem;
-            margin-top: 8px;
-            display: none;
-            font-weight: 500;
-        }
-        
-        .error-msg.show { display: block; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>DRAFTSMAN ELITE</h1>
-            <p>Dynamic Discount Calculator</p>
+            <img src="logo.png" alt="Draftsman Elite" class="logo-img" onerror="this.style.display='none'">
+            <h1>Dynamic Discount Calculator</h1>
         </div>
         
         <div class="calculator-body">
             <div class="input-group">
-                <label for="existing">Existing Structure</label>
-                <p class="description">Square footage of the existing structure</p>
+                <label>Existing Structure</label>
                 <div class="input-wrapper">
-                    <input type="number" id="existing" placeholder="0" min="0" step="1">
+                    <input type="number" id="existing" placeholder="0" min="0">
                     <span class="unit">sq ft</span>
                 </div>
             </div>
             
             <div class="input-group">
-                <label for="new">New Structure</label>
-                <p class="description">Square footage of the proposed new structure</p>
+                <label>New Structure</label>
                 <div class="input-wrapper">
-                    <input type="number" id="new" placeholder="0" min="1" step="1">
+                    <input type="number" id="new" placeholder="0" min="1">
                     <span class="unit">sq ft</span>
                 </div>
-                <p class="error-msg" id="error-msg">Please enter valid positive numbers.</p>
             </div>
             
             <button class="calculate-btn" onclick="calculateDiscount()">CALCULATE DISCOUNT</button>
@@ -286,56 +241,49 @@
             <div class="results" id="results">
                 <div class="result-card">
                     <p class="label">Recommended Discount</p>
-                    <span class="discount-value" id="discount-value">0.00</span>
-                    <span class="discount-suffix">%</span>
-                    <div>
-                        <span class="status-badge" id="status-badge">Standard</span>
+                    <span class="discount-value" id="discount-value">0.00</span><span style="font-size: 1.5rem; font-weight:700; color:var(--brand-primary)">%</span>
+                    
+                    <div class="savings-box">
+                        Saves: <span id="jmd-savings">$0.00</span> JMD
                     </div>
                 </div>
                 
                 <div class="breakdown">
                     <div class="breakdown-item">
-                        <span class="item-label">Total Structure</span>
-                        <span class="item-value" id="total-structure">0 sq ft</span>
+                        <span style="color:#64748b">Total Structure</span>
+                        <span style="font-weight:700; color:var(--brand-primary)" id="total-structure">0 sq ft</span>
                     </div>
                     <div class="breakdown-item">
-                        <span class="item-label">Efficiency Ratio</span>
-                        <span class="item-value" id="efficiency-ratio">0.00</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="item-label">Volume Gate</span>
-                        <span class="item-value" id="volume-gate">N/A</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="item-label">Maximum Cap</span>
-                        <span class="item-value" id="max-allowed">15%</span>
+                        <span style="color:#64748b">Efficiency Ratio</span>
+                        <span style="font-weight:700; color:var(--brand-primary)" id="efficiency-ratio">0.00</span>
                     </div>
                 </div>
+
+                <details>
+                    <summary>View Technical Parameters</summary>
+                    <div class="breakdown-item">
+                        <span>Volume Gate (< 2000)</span>
+                        <span id="volume-gate">Inactive</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Maximum Cap</span>
+                        <span id="max-allowed">15%</span>
+                    </div>
+                </details>
             </div>
         </div>
         
         <div class="footer">
-            <p>Internal Tool v2.0 | © 2025 Draftsman Elite</p>
+            Internal Tool v2.1 | © 2025 Draftsman Elite
         </div>
     </div>
     
     <script>
         function calculateDiscount() {
-            const existingInput = document.getElementById('existing');
-            const newInput = document.getElementById('new');
-            const errorMsg = document.getElementById('error-msg');
-            const resultsDiv = document.getElementById('results');
+            const E = parseFloat(document.getElementById('existing').value);
+            const N = parseFloat(document.getElementById('new').value);
             
-            const E = parseFloat(existingInput.value);
-            const N = parseFloat(newInput.value);
-            
-            if (isNaN(E) || isNaN(N) || E < 0 || N <= 0) {
-                errorMsg.classList.add('show');
-                resultsDiv.classList.remove('show');
-                return;
-            }
-            
-            errorMsg.classList.remove('show');
+            if (isNaN(E) || isNaN(N) || E < 0 || N <= 0) return;
             
             const T = E + N;
             const r = E / T;
@@ -345,39 +293,21 @@
             const volumeGateActive = T < 2000;
             let d_final = Math.min(Math.max(d_scaled, 5), d_max);
             
-            let status, statusClass;
-            if (volumeGateActive && d_scaled > 10) {
-                status = 'Volume Capped (T < 2000)';
-                statusClass = 'capped';
-            } else if (d_final <= 6.5) {
-                status = 'Standard Efficiency';
-                statusClass = 'low';
-            } else if (d_final <= 10) {
-                status = 'High Efficiency';
-                statusClass = 'medium';
-            } else {
-                status = 'Elite Efficiency';
-                statusClass = 'high';
-            }
-            
+            // Calculate JMD Savings: Rate is $140 JMD per sq ft
+            const rate = 140; 
+            const totalValue = T * rate;
+            const savingsAmount = totalValue * (d_final / 100);
+
             document.getElementById('discount-value').textContent = d_final.toFixed(2);
+            document.getElementById('jmd-savings').textContent = '$' + savingsAmount.toLocaleString('en-JM', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('total-structure').textContent = T.toLocaleString() + ' sq ft';
             document.getElementById('efficiency-ratio').textContent = r.toFixed(3);
+            
             document.getElementById('volume-gate').textContent = volumeGateActive ? 'Active' : 'Inactive';
             document.getElementById('max-allowed').textContent = d_max + '%';
             
-            const badge = document.getElementById('status-badge');
-            badge.textContent = status;
-            badge.className = 'status-badge ' + statusClass;
-            
-            resultsDiv.classList.add('show');
+            document.getElementById('results').classList.add('show');
         }
-
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') calculateDiscount();
-            });
-        });
     </script>
 </body>
 </html>
