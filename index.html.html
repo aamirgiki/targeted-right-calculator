@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Discount Calculator | Targeted Right Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #2b6cb0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .calculator-body {
+            padding: 35px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .input-group .description {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-wrapper input {
+            width: 100%;
+            padding: 15px 20px;
+            padding-right: 70px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #2c5282;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(44, 82, 130, 0.1);
+        }
+        
+        .input-wrapper .unit {
+            position: absolute;
+            right: 15px;
+            color: #718096;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(44, 82, 130, 0.35);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #ebf8ff 0%, #e6fffa 100%);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid #bee3f8;
+        }
+        
+        .result-card .label {
+            font-size: 0.9rem;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .result-card .discount-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #2c5282;
+            line-height: 1;
+        }
+        
+        .result-card .discount-suffix {
+            font-size: 1.5rem;
+            color: #4a5568;
+        }
+        
+        .breakdown {
+            margin-top: 25px;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .breakdown h3 {
+            font-size: 0.9rem;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .breakdown-item .item-label {
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+        
+        .breakdown-item .item-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        .status-badge.low {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-badge.medium {
+            background: #feebc8;
+            color: #744210;
+        }
+        
+        .status-badge.high {
+            background: #fed7d7;
+            color: #822727;
+        }
+        
+        .status-badge.capped {
+            background: #e9d8fd;
+            color: #553c9a;
+        }
+        
+        .formula-info {
+            margin-top: 25px;
+            padding: 20px;
+            background: #fffaf0;
+            border-radius: 12px;
+            border-left: 4px solid #ed8936;
+        }
+        
+        .formula-info h4 {
+            color: #c05621;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        
+        .formula-info p {
+            color: #744210;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        
+        .formula-info code {
+            background: rgba(237, 137, 54, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f7fafc;
+            color: #718096;
+            font-size: 0.8rem;
+        }
+        
+        .footer a {
+            color: #2c5282;
+            text-decoration: none;
+        }
+        
+        .error-msg {
+            color: #c53030;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .error-msg.show {
+            display: block;
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .calculator-body {
+                padding: 25px;
+            }
+            
+            .result-card .discount-value {
+                font-size: 2.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Dynamic Discount Calculator</h1>
+            <p>Targeted Right Architecture | Internal Tool</p>
+        </div>
+        
+        <div class="calculator-body">
+            <div class="input-group">
+                <label for="existing">Existing Structure</label>
+                <p class="description">Square footage of the existing structure (for additions/extensions)</p>
+                <div class="input-wrapper">
+                    <input type="number" id="existing" placeholder="e.g., 1500" min="0" step="1">
+                    <span class="unit">sq ft</span>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="new">New Structure</label>
+                <p class="description">Square footage of the proposed new structure/addition</p>
+                <div class="input-wrapper">
+                    <input type="number" id="new" placeholder="e.g., 500" min="1" step="1">
+                    <span class="unit">sq ft</span>
+                </div>
+                <p class="error-msg" id="error-msg">Please enter valid positive numbers for both fields.</p>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateDiscount()">Calculate Discount</button>
+            
+            <div class="results" id="results">
+                <div class="result-card">
+                    <p class="label">Recommended Discount</p>
+                    <span class="discount-value" id="discount-value">0.00</span>
+                    <span class="discount-suffix">%</span>
+                    <div>
+                        <span class="status-badge" id="status-badge">Standard</span>
+                    </div>
+                </div>
+                
+                <div class="breakdown">
+                    <h3>Calculation Breakdown</h3>
+                    <div class="breakdown-item">
+                        <span class="item-label">Total Structure (E + N)</span>
+                        <span class="item-value" id="total-structure">0 sq ft</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="item-label">Efficiency Ratio (E / T)</span>
+                        <span class="item-value" id="efficiency-ratio">0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="item-label">Raw Discount (before clamp)</span>
+                        <span class="item-value" id="raw-discount">0.00%</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="item-label">Volume Gate Status</span>
+                        <span class="item-value" id="volume-gate">N/A</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="item-label">Maximum Allowed</span>
+                        <span class="item-value" id="max-allowed">15%</span>
+                    </div>
+                </div>
+                
+                <div class="formula-info">
+                    <h4>Formula Applied</h4>
+                    <p>
+                        <code>d = clamp(5 + 10 × r³, 5%, d_max)</code><br>
+                        where r = E/T and d_max = 10% if T &lt; 2,000, else 15%
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Formula v2.0 | Designed for internal use only</p>
+            <p style="margin-top: 5px;">© 2025 Targeted Right Architecture</p>
+        </div>
+    </div>
+    
+    <script>
+        function calculateDiscount() {
+            // Get input values
+            const existingInput = document.getElementById('existing');
+            const newInput = document.getElementById('new');
+            const errorMsg = document.getElementById('error-msg');
+            const resultsDiv = document.getElementById('results');
+            
+            const E = parseFloat(existingInput.value);
+            const N = parseFloat(newInput.value);
+            
+            // Validation
+            if (isNaN(E) || isNaN(N) || E < 0 || N <= 0) {
+                errorMsg.classList.add('show');
+                resultsDiv.classList.remove('show');
+                return;
+            }
+            
+            errorMsg.classList.remove('show');
+            
+            // Calculate
+            const T = E + N;  // Total structure
+            const r = E / T;  // Efficiency ratio
+            const d_raw = Math.pow(r, 3);  // Cubic dampening
+            const d_scaled = 5 + 10 * d_raw;  // Scale to 5-15 range
+            
+            // Volume Gate
+            const d_max = T < 2000 ? 10 : 15;
+            const volumeGateActive = T < 2000;
+            
+            // Final clamp
+            let d_final = Math.min(Math.max(d_scaled, 5), d_max);
+            
+            // Determine status
+            let status, statusClass;
+            if (volumeGateActive && d_scaled > 10) {
+                status = 'Volume Capped';
+                statusClass = 'capped';
+            } else if (d_final <= 6.5) {
+                status = 'Standard Range';
+                statusClass = 'low';
+            } else if (d_final <= 10) {
+                status = 'Elevated Range';
+                statusClass = 'medium';
+            } else {
+                status = 'High Efficiency';
+                statusClass = 'high';
+            }
+            
+            // Update UI
+            document.getElementById('discount-value').textContent = d_final.toFixed(2);
+            document.getElementById('total-structure').textContent = T.toLocaleString() + ' sq ft';
+            document.getElementById('efficiency-ratio').textContent = r.toFixed(4);
+            document.getElementById('raw-discount').textContent = d_scaled.toFixed(2) + '%';
+            document.getElementById('volume-gate').textContent = volumeGateActive ? 
+                'Active (T < 2,000)' : 'Inactive (T ≥ 2,000)';
+            document.getElementById('max-allowed').textContent = d_max + '%';
+            
+            const badge = document.getElementById('status-badge');
+            badge.textContent = status;
+            badge.className = 'status-badge ' + statusClass;
+            
+            // Show results
+            resultsDiv.classList.add('show');
+        }
+        
+        // Allow Enter key to trigger calculation
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateDiscount();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
