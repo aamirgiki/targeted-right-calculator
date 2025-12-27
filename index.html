@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Discount Calculator | Draftsman Elite</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --brand-primary: #24404D;
             --brand-dark: #0F0F0F;
             --brand-white: #FFFFFF;
+            --error-red: #e53e3e;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -62,7 +64,7 @@
         
         .calculator-body { padding: 35px; }
         
-        .input-group { margin-bottom: 25px; }
+        .input-group { margin-bottom: 20px; }
         
         .input-group label {
             display: block;
@@ -72,6 +74,8 @@
             font-size: 0.9rem;
             text-transform: uppercase;
         }
+        
+        .input-wrapper { position: relative; }
         
         .input-wrapper input {
             width: 100%;
@@ -94,9 +98,15 @@
             font-size: 0.9rem;
             font-weight: 600;
         }
-        
-        .input-wrapper { position: relative; }
 
+        .error-message {
+            color: var(--error-red);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+            font-weight: 600;
+        }
+        
         .calculate-btn {
             width: 100%;
             padding: 18px;
@@ -157,8 +167,15 @@
             line-height: 1;
         }
         
+        .explanation-text {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
         .savings-box {
-            margin-top: 15px;
+            margin-top: 10px;
             background: #e0f2fe;
             color: #0c4a6e;
             padding: 10px;
@@ -190,18 +207,36 @@
             color: #64748b;
             font-weight: 600;
             padding: 5px;
-            list-style: none; /* Hide default triangle in some browsers */
+            list-style: none;
         }
         
         summary:hover { color: var(--brand-primary); }
-
-        summary::after {
-            content: "+"; 
-            float: right;
-            font-weight: bold;
-        }
-        
+        summary::after { content: "+"; float: right; font-weight: bold; }
         details[open] summary::after { content: "-"; }
+
+        .action-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: transparent;
+            border: 2px solid var(--brand-primary);
+            color: var(--brand-primary);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: var(--brand-primary);
+            color: white;
+        }
 
         .footer {
             text-align: center;
@@ -210,10 +245,13 @@
             color: #94a3b8;
             font-size: 0.75rem;
         }
+        
+        /* Hide buttons during PDF generation */
+        .pdf-hide { display: block; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="calculator-card">
         <div class="header">
             <img src="logo.png" alt="Draftsman Elite" class="logo-img" onerror="this.style.display='none'">
             <h1>Dynamic Discount Calculator</h1>
@@ -234,15 +272,20 @@
                     <input type="number" id="new" placeholder="0" min="1">
                     <span class="unit">sq ft</span>
                 </div>
+                <div class="error-message" id="error-msg">Please enter valid positive numbers.</div>
             </div>
             
-            <button class="calculate-btn" onclick="calculateDiscount()">CALCULATE DISCOUNT</button>
+            <div class="pdf-hide" id="controls-area">
+                <button class="calculate-btn" onclick="calculateDiscount()">CALCULATE DISCOUNT</button>
+            </div>
             
             <div class="results" id="results">
                 <div class="result-card">
                     <p class="label">Recommended Discount</p>
                     <span class="discount-value" id="discount-value">0.00</span><span style="font-size: 1.5rem; font-weight:700; color:var(--brand-primary)">%</span>
                     
+                    <p class="explanation-text" id="explanation">Includes 5% Base + Efficiency Bonus</p>
+
                     <div class="savings-box">
                         Saves: <span id="jmd-savings">$0.00</span> JMD
                     </div>
@@ -259,7 +302,7 @@
                     </div>
                 </div>
 
-                <details>
+                <details class="pdf-hide">
                     <summary>View Technical Parameters</summary>
                     <div class="breakdown-item">
                         <span>Volume Gate (< 2000)</span>
@@ -270,43 +313,104 @@
                         <span id="max-allowed">15%</span>
                     </div>
                 </details>
+
+                <div class="action-buttons pdf-hide">
+                    <button class="download-btn" onclick="downloadPDF()">
+                        ⬇ Download Result as PDF
+                    </button>
+                </div>
             </div>
         </div>
         
         <div class="footer">
-            Internal Tool v2.1 | © 2025 Draftsman Elite
+            Internal Tool v2.2 | © 2025 Draftsman Elite
         </div>
     </div>
     
     <script>
+        // CONFIGURATION VARIABLES (Traceability)
+        const CONFIG = {
+            BASE_DISCOUNT: 5,
+            BASE_SCALAR: 10,
+            VOLUME_GATE_LIMIT: 2000,
+            CAP_LOW: 10,
+            CAP_HIGH: 15,
+            EXPONENT: 3,
+            JMD_RATE: 140
+        };
+
         function calculateDiscount() {
-            const E = parseFloat(document.getElementById('existing').value);
-            const N = parseFloat(document.getElementById('new').value);
+            const existingInput = document.getElementById('existing');
+            const newInput = document.getElementById('new');
+            const errorMsg = document.getElementById('error-msg');
             
-            if (isNaN(E) || isNaN(N) || E < 0 || N <= 0) return;
+            const E = parseFloat(existingInput.value);
+            const N = parseFloat(newInput.value);
+            
+            // VALIDATION: Check for negatives or missing new structure
+            if (isNaN(E) || isNaN(N) || E < 0 || N <= 0) {
+                errorMsg.style.display = 'block';
+                document.getElementById('results').classList.remove('show');
+                return;
+            }
+            
+            errorMsg.style.display = 'none';
             
             const T = E + N;
             const r = E / T;
-            const d_raw = Math.pow(r, 3);
-            const d_scaled = 5 + 10 * d_raw;
-            const d_max = T < 2000 ? 10 : 15;
-            const volumeGateActive = T < 2000;
-            let d_final = Math.min(Math.max(d_scaled, 5), d_max);
             
-            // Calculate JMD Savings: Rate is $140 JMD per sq ft
-            const rate = 140; 
-            const totalValue = T * rate;
+            // FORMULA: 5 + 10 * r^3
+            const d_raw = Math.pow(r, CONFIG.EXPONENT);
+            const d_scaled = CONFIG.BASE_DISCOUNT + CONFIG.BASE_SCALAR * d_raw;
+            
+            const d_max = T < CONFIG.VOLUME_GATE_LIMIT ? CONFIG.CAP_LOW : CONFIG.CAP_HIGH;
+            const volumeGateActive = T < CONFIG.VOLUME_GATE_LIMIT;
+            
+            let d_final = Math.min(Math.max(d_scaled, CONFIG.BASE_DISCOUNT), d_max);
+            
+            // JMD Calculation
+            const totalValue = T * CONFIG.JMD_RATE;
             const savingsAmount = totalValue * (d_final / 100);
 
+            // Display Results
             document.getElementById('discount-value').textContent = d_final.toFixed(2);
             document.getElementById('jmd-savings').textContent = '$' + savingsAmount.toLocaleString('en-JM', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('total-structure').textContent = T.toLocaleString() + ' sq ft';
             document.getElementById('efficiency-ratio').textContent = r.toFixed(3);
             
+            // Update Explanation Text
+            const efficiencyPart = (d_final - CONFIG.BASE_DISCOUNT).toFixed(2);
+            document.getElementById('explanation').textContent = `Includes ${CONFIG.BASE_DISCOUNT}% Base + ${efficiencyPart}% Efficiency Bonus`;
+
             document.getElementById('volume-gate').textContent = volumeGateActive ? 'Active' : 'Inactive';
             document.getElementById('max-allowed').textContent = d_max + '%';
             
             document.getElementById('results').classList.add('show');
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('calculator-card');
+            // Hide buttons before printing to make it look clean
+            const buttons = document.querySelectorAll('.pdf-hide');
+            buttons.forEach(btn => btn.style.display = 'none');
+
+            const opt = {
+                margin:       10,
+                filename:     'Draftsman_Discount_Result.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Generate PDF and then restore buttons
+            html2pdf().from(element).set(opt).save().then(() => {
+                buttons.forEach(btn => btn.style.display = 'block');
+                // Keep details closed for UI but re-enable display property
+                document.querySelector('details').style.display = 'block'; 
+                document.getElementById('controls-area').style.display = 'block';
+                document.querySelector('.action-buttons').style.display = 'block'; 
+                document.querySelector('.action-buttons').style.textAlign = 'center'; // Restore alignment
+            });
         }
     </script>
 </body>
