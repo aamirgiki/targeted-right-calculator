@@ -255,11 +255,7 @@
             padding: 40px;
             font-family: 'Montserrat', sans-serif;
             color: #000;
-            margin: 0 auto;
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            margin: 0;
         }
 
         .pdf-header {
@@ -592,8 +588,20 @@
             document.getElementById('pdf-gate-val').textContent = document.getElementById('volume-gate').textContent;
             document.getElementById('pdf-cap-val').textContent = document.getElementById('max-allowed').textContent;
 
-            // 2. Show Template temporarily
+            // 2. Show Template and temporarily adjust body for proper capture
             const element = document.getElementById('pdf-template');
+            const body = document.body;
+            const calculator = document.getElementById('calculator-card');
+            
+            // Store original styles
+            const originalBodyStyle = body.style.cssText;
+            
+            // Hide calculator and reset body layout
+            calculator.style.display = 'none';
+            body.style.display = 'block';
+            body.style.padding = '0';
+            body.style.background = 'white';
+            
             element.style.display = 'block';
 
             // 3. Generate PDF with SAFE MARGINS
@@ -606,7 +614,10 @@
             };
 
             html2pdf().from(element).set(opt).save().then(() => {
-                element.style.display = 'none'; // Hide again after download
+                // Restore original styles
+                element.style.display = 'none';
+                calculator.style.display = '';
+                body.style.cssText = originalBodyStyle;
             });
         }
     </script>
