@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Discount Calculator | Draftsman Elite</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --brand-primary: #24404D;
@@ -380,6 +380,8 @@
         }
 
         function generateReport() {
+            const { jsPDF } = window.jspdf;
+            
             const existingVal = document.getElementById('existing').value || '0';
             const newVal = document.getElementById('new').value || '0';
             
@@ -391,7 +393,7 @@
             const dateStr = `${day}/${month}/${year}`;
             const refId = 'DE-' + Math.floor(1000 + Math.random() * 9000);
             
-            // Build filename: (DD/MM/YYYY) Draftsman Elite Discount Report - Xes and Xns
+            // Build filename
             const filename = `(${dateStr}) Draftsman Elite Discount Report - ${existingVal}es and ${newVal}ns.pdf`;
 
             // Get calculated values
@@ -402,90 +404,121 @@
             const gateVal = document.getElementById('volume-gate').textContent;
             const capVal = document.getElementById('max-allowed').textContent;
 
-            // Create a temporary container with inline styles (more reliable for html2pdf)
-            const container = document.createElement('div');
-            container.innerHTML = `
-                <div style="width: 350px; padding: 25px; font-family: 'Montserrat', Arial, sans-serif; background: #fff; color: #000;">
-                    <div style="text-align: center; border-bottom: 3px solid #24404D; padding-bottom: 15px; margin-bottom: 20px;">
-                        <h2 style="font-size: 16px; font-weight: 700; color: #24404D; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px;">DRAFTSMAN ELITE</h2>
-                        <p style="font-size: 13px; font-weight: 600; color: #24404D; margin: 0;">Discount Assessment</p>
-                        <p style="font-size: 11px; color: #666; margin: 8px 0 0 0;">${dateStr} | Ref: ${refId}</p>
-                    </div>
+            // Create compact PDF (100mm x 150mm)
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [100, 150]
+            });
 
-                    <div style="background: #24404D; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
-                        <p style="text-transform: uppercase; font-size: 10px; letter-spacing: 1px; margin: 0 0 8px 0; opacity: 0.9;">Recommended Discount</p>
-                        <p style="font-size: 36px; font-weight: 700; margin: 0; line-height: 1;">${discountVal}</p>
-                        <div style="background: rgba(255,255,255,0.15); padding: 10px; border-radius: 6px; margin-top: 12px;">
-                            <p style="margin: 0; font-size: 13px;">Savings: <strong>${savingsVal}</strong></p>
-                        </div>
-                    </div>
+            const pageWidth = 100;
+            const brandColor = [36, 64, 77]; // #24404D
+            const grayColor = [100, 100, 100];
+            let y = 12;
 
-                    <div style="background: #f8fafc; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px;">
-                            <span>Existing Structure:</span>
-                            <strong style="color: #24404D;">${existingVal} sq ft</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px;">
-                            <span>New Structure:</span>
-                            <strong style="color: #24404D;">${newVal} sq ft</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px;">
-                            <span>Total Area:</span>
-                            <strong style="color: #24404D;">${totalVal}</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px;">
-                            <span>Efficiency Ratio:</span>
-                            <strong style="color: #24404D;">${ratioVal}</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px;">
-                            <span>Volume Gate:</span>
-                            <strong style="color: #24404D;">${gateVal}</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px;">
-                            <span>Cap Applied:</span>
-                            <strong style="color: #24404D;">${capVal}</strong>
-                        </div>
-                    </div>
+            // Header
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...brandColor);
+            doc.text('DRAFTSMAN ELITE', pageWidth / 2, y, { align: 'center' });
+            y += 6;
 
-                    <div style="text-align: center; font-size: 10px; color: #999; border-top: 1px solid #eee; padding-top: 12px;">
-                        <p style="margin: 0 0 3px 0;">Generated by Draftsman Elite Internal Tool v2.5</p>
-                        <p style="margin: 0;">Valid for 30 days from issue date. © 2025 Draftsman Elite</p>
-                    </div>
-                </div>
-            `;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Discount Assessment', pageWidth / 2, y, { align: 'center' });
+            y += 5;
 
-            // Append to body (visible but positioned off-screen initially)
-            container.style.cssText = 'position: fixed; top: 0; left: 0; z-index: 9999; background: white;';
-            document.body.appendChild(container);
+            doc.setFontSize(8);
+            doc.setTextColor(...grayColor);
+            doc.text(`${dateStr}  |  Ref: ${refId}`, pageWidth / 2, y, { align: 'center' });
+            y += 4;
 
-            // Small delay to ensure rendering, then generate PDF
-            setTimeout(() => {
-                const opt = {
-                    margin: 0,
-                    filename: filename,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { 
-                        scale: 2,
-                        useCORS: true,
-                        logging: false,
-                        backgroundColor: '#ffffff',
-                        width: 350,
-                        windowWidth: 350
-                    },
-                    jsPDF: { 
-                        unit: 'mm', 
-                        format: [100, 155],
-                        orientation: 'portrait' 
-                    }
-                };
+            // Header line
+            doc.setDrawColor(...brandColor);
+            doc.setLineWidth(0.8);
+            doc.line(10, y, 90, y);
+            y += 8;
 
-                html2pdf().from(container.firstElementChild).set(opt).save().then(() => {
-                    document.body.removeChild(container);
-                }).catch(err => {
-                    console.error('PDF error:', err);
-                    document.body.removeChild(container);
-                });
-            }, 100);
+            // Main result box
+            doc.setFillColor(...brandColor);
+            doc.roundedRect(10, y, 80, 38, 3, 3, 'F');
+
+            // Discount label
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text('RECOMMENDED DISCOUNT', pageWidth / 2, y + 8, { align: 'center' });
+
+            // Big discount number
+            doc.setFontSize(28);
+            doc.setFont('helvetica', 'bold');
+            doc.text(discountVal, pageWidth / 2, y + 22, { align: 'center' });
+
+            // Savings box inside
+            doc.setFillColor(255, 255, 255, 0.15);
+            doc.roundedRect(15, y + 26, 70, 9, 2, 2, 'F');
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Savings: ${savingsVal}`, pageWidth / 2, y + 32, { align: 'center' });
+
+            y += 45;
+
+            // Details section
+            doc.setFillColor(248, 250, 252);
+            doc.roundedRect(10, y, 80, 52, 3, 3, 'F');
+
+            const detailsStartY = y + 7;
+            const leftX = 14;
+            const rightX = 86;
+            const rowHeight = 8;
+
+            doc.setFontSize(9);
+            doc.setTextColor(...grayColor);
+
+            const details = [
+                ['Existing Structure:', `${existingVal} sq ft`],
+                ['New Structure:', `${newVal} sq ft`],
+                ['Total Area:', totalVal],
+                ['Efficiency Ratio:', ratioVal],
+                ['Volume Gate:', gateVal],
+                ['Cap Applied:', capVal]
+            ];
+
+            details.forEach((row, i) => {
+                const rowY = detailsStartY + (i * rowHeight);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...grayColor);
+                doc.text(row[0], leftX, rowY);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(...brandColor);
+                doc.text(row[1], rightX, rowY, { align: 'right' });
+
+                // Dashed line (except last row)
+                if (i < details.length - 1) {
+                    doc.setDrawColor(220, 220, 220);
+                    doc.setLineDashPattern([1, 1], 0);
+                    doc.line(leftX, rowY + 3, rightX, rowY + 3);
+                }
+            });
+
+            y += 58;
+
+            // Footer
+            doc.setLineDashPattern([], 0);
+            doc.setDrawColor(230, 230, 230);
+            doc.setLineWidth(0.3);
+            doc.line(10, y, 90, y);
+            y += 5;
+
+            doc.setFontSize(7);
+            doc.setTextColor(150, 150, 150);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Generated by Draftsman Elite Internal Tool v2.5', pageWidth / 2, y, { align: 'center' });
+            y += 4;
+            doc.text('Valid for 30 days from issue date. © 2025 Draftsman Elite', pageWidth / 2, y, { align: 'center' });
+
+            // Save
+            doc.save(filename);
         }
     </script>
 </body>
