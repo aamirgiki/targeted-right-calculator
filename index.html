@@ -247,126 +247,106 @@
             font-size: 0.75rem;
         }
 
-        /* --- HIDDEN PDF REPORT TEMPLATE --- */
+        /* --- COMPACT PDF REPORT TEMPLATE --- */
         #pdf-template {
-            display: none;
-            width: 700px;
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 400px;
             background: white;
-            padding: 40px;
+            padding: 25px;
             font-family: 'Montserrat', sans-serif;
             color: #000;
-            margin: 0;
         }
 
         .pdf-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid var(--brand-primary);
-            padding-bottom: 25px;
-            margin-bottom: 35px;
+            text-align: center;
+            border-bottom: 2px solid var(--brand-primary);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .pdf-logo {
-            max-width: 180px;
-        }
-
-        .pdf-meta {
-            text-align: right;
-            font-size: 0.95rem;
-            color: #555;
-            line-height: 1.6;
+            max-width: 140px;
+            margin-bottom: 8px;
         }
 
         .pdf-title {
-            text-align: center;
-            font-size: 2rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--brand-primary);
             text-transform: uppercase;
-            margin-bottom: 50px;
-            letter-spacing: 1px;
-        }
-
-        .pdf-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 50px;
-        }
-
-        .pdf-section {
-            background: #f8fafc;
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            height: 100%;
-        }
-
-        .pdf-section h3 {
-            color: var(--brand-primary);
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            border-bottom: 2px solid #cbd5e0;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
+            margin: 0;
             letter-spacing: 0.5px;
         }
 
-        .pdf-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            font-size: 1.05rem;
-            padding-bottom: 5px;
-            border-bottom: 1px dashed #eee;
+        .pdf-meta {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 8px;
         }
-        
-        .pdf-row:last-child { border-bottom: none; }
 
         .pdf-result-box {
             background: var(--brand-primary);
             color: white;
-            padding: 30px;
-            border-radius: 12px;
+            padding: 20px;
+            border-radius: 8px;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-            box-shadow: 0 10px 20px rgba(36, 64, 77, 0.15);
+            margin-bottom: 15px;
+        }
+
+        .pdf-result-label {
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 5px;
         }
 
         .pdf-big-text {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            margin: 15px 0;
             line-height: 1;
         }
 
         .pdf-savings {
             background: rgba(255,255,255,0.15);
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 1.3rem;
-            margin-top: 15px;
-            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 10px;
         }
 
-        .technical-section {
-            margin-top: 30px;
-            border: 1px solid #eee;
+        .pdf-details {
+            background: #f8fafc;
             border-radius: 8px;
-            padding: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .pdf-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.85rem;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .pdf-row:last-child {
+            border-bottom: none;
+        }
+
+        .pdf-row strong {
+            color: var(--brand-primary);
         }
 
         .pdf-footer {
-            margin-top: 60px;
             text-align: center;
-            font-size: 0.85rem;
-            color: #888;
+            font-size: 0.65rem;
+            color: #999;
             border-top: 1px solid #eee;
-            padding-top: 25px;
+            padding-top: 12px;
+            margin-top: 10px;
         }
 
     </style>
@@ -443,78 +423,58 @@
         </div>
         
         <div class="footer">
-            Internal Tool v2.4 | © 2025 Draftsman Elite
+            Internal Tool v2.5 | © 2025 Draftsman Elite
         </div>
     </div>
 
+    <!-- COMPACT PDF TEMPLATE -->
     <div id="pdf-template">
         <div class="pdf-header">
-            <img src="logo.png" alt="Draftsman Elite" class="pdf-logo">
+            <img src="logo.png" alt="Draftsman Elite" class="pdf-logo" onerror="this.style.display='none'">
+            <h2 class="pdf-title">Discount Assessment</h2>
             <div class="pdf-meta">
-                <p><strong>Date:</strong> <span id="pdf-date"></span></p>
-                <p><strong>Ref ID:</strong> <span id="pdf-ref"></span></p>
-                <p><strong>Generated By:</strong> Internal Tool v2.4</p>
+                <span id="pdf-date"></span> | Ref: <span id="pdf-ref"></span>
             </div>
         </div>
 
-        <h2 class="pdf-title">Discount Assessment Report</h2>
-
-        <div class="pdf-grid">
-            <div class="pdf-section">
-                <h3>Project Parameters</h3>
-                <div class="pdf-row">
-                    <span>Existing Structure:</span>
-                    <strong id="pdf-existing-val">0 sq ft</strong>
-                </div>
-                <div class="pdf-row">
-                    <span>New Structure:</span>
-                    <strong id="pdf-new-val">0 sq ft</strong>
-                </div>
-                <div class="pdf-row" style="background: #eef2f6; padding: 5px; border-radius: 4px;">
-                    <span>Total Area:</span>
-                    <strong id="pdf-total-val">0 sq ft</strong>
-                </div>
-                <div class="pdf-row" style="margin-top: 15px;">
-                    <span>Efficiency Ratio:</span>
-                    <strong id="pdf-ratio-val">0.00</strong>
-                </div>
-            </div>
-
-            <div class="pdf-result-box">
-                <p style="text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; opacity: 0.9;">Recommended Discount</p>
-                <div class="pdf-big-text" id="pdf-discount-val">0.00%</div>
-                <div class="pdf-savings">
-                    Estimated Savings:<br>
-                    <strong id="pdf-savings-val">$0.00 JMD</strong>
-                </div>
+        <div class="pdf-result-box">
+            <p class="pdf-result-label">Recommended Discount</p>
+            <div class="pdf-big-text" id="pdf-discount-val">0.00%</div>
+            <div class="pdf-savings">
+                Savings: <strong id="pdf-savings-val">$0.00 JMD</strong>
             </div>
         </div>
 
-        <div class="technical-section">
-            <div class="pdf-section" style="border:none; background:none; padding:0;">
-                <h3 style="border-bottom: 1px dashed #ccc;">Technical Breakdown</h3>
-                <div class="pdf-row">
-                    <span>Calculation Basis:</span>
-                    <span>Standard Dynamic Formula</span>
-                </div>
-                <div class="pdf-row">
-                    <span>Base Discount:</span>
-                    <span>5.00%</span>
-                </div>
-                <div class="pdf-row">
-                    <span>Volume Gate Status:</span>
-                    <span id="pdf-gate-val">Inactive</span>
-                </div>
-                <div class="pdf-row">
-                    <span>Applicable Cap:</span>
-                    <span id="pdf-cap-val">15%</span>
-                </div>
+        <div class="pdf-details">
+            <div class="pdf-row">
+                <span>Existing Structure:</span>
+                <strong id="pdf-existing-val">0 sq ft</strong>
+            </div>
+            <div class="pdf-row">
+                <span>New Structure:</span>
+                <strong id="pdf-new-val">0 sq ft</strong>
+            </div>
+            <div class="pdf-row">
+                <span>Total Area:</span>
+                <strong id="pdf-total-val">0 sq ft</strong>
+            </div>
+            <div class="pdf-row">
+                <span>Efficiency Ratio:</span>
+                <strong id="pdf-ratio-val">0.00</strong>
+            </div>
+            <div class="pdf-row">
+                <span>Volume Gate:</span>
+                <strong id="pdf-gate-val">Inactive</strong>
+            </div>
+            <div class="pdf-row">
+                <span>Cap Applied:</span>
+                <strong id="pdf-cap-val">15%</strong>
             </div>
         </div>
 
         <div class="pdf-footer">
-            <p>This document is computer generated by the Draftsman Elite Internal Tool.</p>
-            <p>Valid for 30 days from date of issue. © 2025 Draftsman Elite.</p>
+            <p>Generated by Draftsman Elite Internal Tool v2.5</p>
+            <p>Valid for 30 days from issue date. © 2025 Draftsman Elite</p>
         </div>
     </div>
     
@@ -572,51 +532,68 @@
         }
 
         function generateReport() {
-            // 1. Populate PDF Data
+            const existingVal = document.getElementById('existing').value || '0';
+            const newVal = document.getElementById('new').value || '0';
+            
+            // Format today's date as DD/MM/YYYY
             const today = new Date();
-            document.getElementById('pdf-date').textContent = today.toLocaleDateString();
-            document.getElementById('pdf-ref').textContent = 'DE-' + Math.floor(1000 + Math.random() * 9000); // Random Ref ID
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            const dateStr = `${day}/${month}/${year}`;
+            
+            // Build filename: (DD/MM/YYYY) Draftsman Elite Discount Report - Xes and Xns
+            const filename = `(${dateStr}) Draftsman Elite Discount Report - ${existingVal}es and ${newVal}ns.pdf`;
 
-            document.getElementById('pdf-existing-val').textContent = document.getElementById('existing').value + ' sq ft';
-            document.getElementById('pdf-new-val').textContent = document.getElementById('new').value + ' sq ft';
+            // Populate PDF template data
+            document.getElementById('pdf-date').textContent = dateStr;
+            document.getElementById('pdf-ref').textContent = 'DE-' + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('pdf-existing-val').textContent = existingVal + ' sq ft';
+            document.getElementById('pdf-new-val').textContent = newVal + ' sq ft';
             document.getElementById('pdf-total-val').textContent = document.getElementById('total-structure').textContent;
             document.getElementById('pdf-ratio-val').textContent = document.getElementById('efficiency-ratio').textContent;
-            
             document.getElementById('pdf-discount-val').textContent = document.getElementById('discount-value').textContent + '%';
             document.getElementById('pdf-savings-val').textContent = document.getElementById('jmd-savings').textContent + ' JMD';
-            
             document.getElementById('pdf-gate-val').textContent = document.getElementById('volume-gate').textContent;
             document.getElementById('pdf-cap-val').textContent = document.getElementById('max-allowed').textContent;
 
-            // 2. Clone the template and place in a fresh container
+            // Get the template element
             const element = document.getElementById('pdf-template');
-            element.style.display = 'block';
             
-            // Create a temporary container outside the flex body
-            const tempContainer = document.createElement('div');
-            tempContainer.style.cssText = 'position:fixed; top:0; left:0; width:700px; background:white; z-index:9999;';
-            
-            // Clone the content
-            const clone = element.cloneNode(true);
-            clone.style.display = 'block';
-            clone.style.margin = '0';
-            clone.style.padding = '40px';
-            tempContainer.appendChild(clone);
-            document.body.appendChild(tempContainer);
+            // Temporarily move it into view for rendering
+            element.style.position = 'fixed';
+            element.style.left = '0';
+            element.style.top = '0';
+            element.style.zIndex = '-1';
 
-            // 3. Generate PDF
+            // PDF options for compact notepad style
             const opt = {
-                margin: [5, 10, 10, 10],
-                filename: 'Draftsman_Discount_Report.pdf',
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin: 10,
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: [120, 180],  // Compact notepad size (width x height in mm)
+                    orientation: 'portrait' 
+                }
             };
 
-            html2pdf().from(clone).set(opt).save().then(() => {
-                // Cleanup
-                document.body.removeChild(tempContainer);
-                element.style.display = 'none';
+            // Generate PDF
+            html2pdf().from(element).set(opt).save().then(() => {
+                // Reset position
+                element.style.position = 'absolute';
+                element.style.left = '-9999px';
+                element.style.zIndex = '';
+            }).catch(err => {
+                console.error('PDF generation error:', err);
+                element.style.position = 'absolute';
+                element.style.left = '-9999px';
             });
         }
     </script>
