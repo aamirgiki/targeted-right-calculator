@@ -6,7 +6,7 @@ A lightweight, single-page web calculator that computes efficiency-based discoun
 
 ## Quick Start
 
-Simply open `calculator.html` in any web browser. No installation or server required.
+Simply open `index.html` in any web browser. No installation or server required.
 
 ## Hosting on GitHub Pages (Free)
 
@@ -24,9 +24,8 @@ Simply open `calculator.html` in any web browser. No installation or server requ
 
 ### Step 3: Upload the Calculator
 1. In your new repository, click "uploading an existing file"
-2. Drag and drop `calculator.html` into the upload area
-3. Rename it to `index.html` for easier access
-4. Click "Commit changes"
+2. Drag and drop `index.html` into the upload area
+3. Click "Commit changes"
 
 ### Step 4: Enable GitHub Pages
 1. Go to your repository's "Settings" tab
@@ -71,8 +70,9 @@ Where:
 
 ## Files Included
 
-- `calculator.html` (or `index.html`) - The main calculator application
+- `index.html` - The main calculator application
 - `Dynamic_Discount_Formula_Documentation.docx` - Complete mathematical model documentation
+- 'logo.png' - Company  main logo
 - `README.md` - This file
 
 ## Technical Details
