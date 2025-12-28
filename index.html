@@ -401,14 +401,12 @@
             const savingsVal = document.getElementById('jmd-savings').textContent + ' JMD';
             const totalVal = document.getElementById('total-structure').textContent;
             const ratioVal = document.getElementById('efficiency-ratio').textContent;
-            const gateVal = document.getElementById('volume-gate').textContent;
-            const capVal = document.getElementById('max-allowed').textContent;
 
-            // Create compact PDF (100mm x 150mm)
+            // Create compact PDF (100mm x 130mm - shorter now with fewer rows)
             const doc = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
-                format: [100, 150]
+                format: [100, 130]
             });
 
             const pageWidth = 100;
@@ -439,9 +437,9 @@
             doc.line(10, y, 90, y);
             y += 8;
 
-            // Main result box
+            // Main result box (taller for bigger savings text)
             doc.setFillColor(...brandColor);
-            doc.roundedRect(10, y, 80, 38, 3, 3, 'F');
+            doc.roundedRect(10, y, 80, 42, 3, 3, 'F');
 
             // Discount label
             doc.setTextColor(255, 255, 255);
@@ -454,38 +452,34 @@
             doc.setFont('helvetica', 'bold');
             doc.text(discountVal, pageWidth / 2, y + 22, { align: 'center' });
 
-            // Savings box inside
+            // Savings box inside (larger)
             doc.setFillColor(255, 255, 255, 0.15);
-            doc.roundedRect(15, y + 26, 70, 9, 2, 2, 'F');
-            doc.setFontSize(9);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Savings: ${savingsVal}`, pageWidth / 2, y + 32, { align: 'center' });
+            doc.roundedRect(15, y + 27, 70, 12, 2, 2, 'F');
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Savings: ${savingsVal}`, pageWidth / 2, y + 35, { align: 'center' });
 
-            y += 45;
+            y += 50;
 
-            // Details section
+            // Details section (only 4 rows now)
             doc.setFillColor(248, 250, 252);
-            doc.roundedRect(10, y, 80, 52, 3, 3, 'F');
+            doc.roundedRect(10, y, 80, 38, 3, 3, 'F');
 
-            const detailsStartY = y + 7;
+            const detailsStartY = y + 8;
             const leftX = 14;
             const rightX = 86;
-            const rowHeight = 8;
-
-            doc.setFontSize(9);
-            doc.setTextColor(...grayColor);
+            const rowHeight = 9;
 
             const details = [
                 ['Existing Structure:', `${existingVal} sq ft`],
                 ['New Structure:', `${newVal} sq ft`],
                 ['Total Area:', totalVal],
-                ['Efficiency Ratio:', ratioVal],
-                ['Volume Gate:', gateVal],
-                ['Cap Applied:', capVal]
+                ['Efficiency Ratio:', ratioVal]
             ];
 
             details.forEach((row, i) => {
                 const rowY = detailsStartY + (i * rowHeight);
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'normal');
                 doc.setTextColor(...grayColor);
                 doc.text(row[0], leftX, rowY);
@@ -501,7 +495,7 @@
                 }
             });
 
-            y += 58;
+            y += 44;
 
             // Footer
             doc.setLineDashPattern([], 0);
